@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Enlace al archivo CSS externo -->
+    <link rel="stylesheet" href="~/css/index.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Iniciar sesión</h2>
+        <form id="login-form" method="post" action="/sistema_Tickets/Login">
+            <div class="input-group">
+                <label for="user_nombre">Usuario</label>
+                <input type="text" id="user_nombre" name="user_nombre" placeholder="Ingrese su usuario">
+            </div>
+            <div class="input-group">
+                <label for="contrasenia">Contraseña</label>
+                <input type="password" id="contrasenia" name="contrasenia" placeholder="Ingrese su contraseña">
+            </div>
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="error-message" id="error-message">@ViewBag.ErrorMessage</div>
+            }
+            <button type="submit">Iniciar sesión</button>
+        </form>
+    </div>
+</body>
+</html>
+
+

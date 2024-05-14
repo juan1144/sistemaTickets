@@ -1,0 +1,57 @@
+﻿@{
+}
+@model sistemaTickets.Models.usuario
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuario Normal</title>
+    <!-- Enlace al archivo CSS externo -->
+    <link rel="stylesheet" href="~/css/home.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="user-profile">
+            <img src="@Model.imagen" alt="Foto de perfil">
+            <div class="user-info">
+                <span class="name">@Model.nombre @Model.apellido</span>
+            </div>
+        </div>
+        <div class="option">
+            <img src="~/images/Ticket image.png" alt="Enviar un Ticket">
+            <span>Enviar un Ticket</span>
+        </div>
+        <div class="option">
+            <img src="~/images/History image.png" alt="Historial de Tickets">
+            <span>Historial de Tickets</span>
+        </div>
+        <div class="option">
+            <img src="~/images/dashboard.png" alt="Dashboard">
+            <span>Dashboard</span>
+        </div>
+        <div class="option">
+            <img src="~/images/user.png" alt="Usuarios">
+            <span>Gestionar usuarios</span>
+        </div>
+    </aside>
+
+    <!-- Contenido principal -->
+    <div class="content">
+        <h1>Bienvenido/a</h1>
+        <div class="options">
+            <a href="#" class="option2">
+                <img src="~/images/Ticket image.png" alt="Enviar un Ticket">
+                <span>Enviar un Ticket</span>
+            </a>
+            <a href="#" class="option2">
+                <img src="~/images/History image.png" alt="Historial de Tickets">
+                <span>Historial de Tickets</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
