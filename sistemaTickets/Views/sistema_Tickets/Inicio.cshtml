@@ -1,6 +1,4 @@
-﻿@{
-}
-@model sistemaTickets.Models.usuario
+﻿@model sistemaTickets.Models.usuario
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,6 +8,50 @@
     <!-- Enlace al archivo CSS externo -->
     <link rel="stylesheet" href="~/css/home.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap">
+    <style>
+        /* Agregar estilos a las opciones en el sidebar */
+        .option {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #fff;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; /* Agregar transición */
+            border: 2px solid transparent; /* Agregar un borde transparente */
+            border-radius: 10px; /* Agregar bordes redondeados */
+        }
+
+        .option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .option:focus,
+        .option:active {
+            outline: none; /* Eliminar el contorno al hacer clic */
+        }
+
+        .option img {
+            width: 50px; /* Tamaño del icono */
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        .option span {
+            font-size: 1em; /* Tamaño del texto */
+        }
+
+        /* Agregar estilos al hover */
+        .option:hover {
+            border-color: #ffca28; /* Cambiar el color del borde al pasar el cursor */
+        }
+
+        /* Agregar estilos cuando está seleccionado */
+        .option:active,
+        .option:focus {
+            border-color: #ffca28; /* Cambiar el color del borde al seleccionar */
+        }
+    </style>
 </head>
 <body>
 
@@ -17,25 +59,29 @@
     <aside class="sidebar">
         <div class="user-profile">
             <img src="@Model.imagen" alt="Foto de perfil">
-            <div class="user-info">
-                <span class="name">@Model.nombre @Model.apellido</span>
-            </div>
+                <div class="user-info">
+                    <span class="name">@Model.nombre @Model.apellido</span>
+                </div>
         </div>
+        <a href="@Url.Action("EnviarTicket", "sistema_Tickets", new { userId = Model.id_usuario })">
         <div class="option">
-            <img src="~/images/Ticket image.png" alt="Enviar un Ticket">
-            <span>Enviar un Ticket</span>
+            
+                <img src="~/images/Ticket image.png" alt="Ticket">
+                <span>Enviar un Ticket</span>
+            
         </div>
+        </a>
         <div class="option">
-            <img src="~/images/History image.png" alt="Historial de Tickets">
+            <img src="~/images/History image.png" alt="Historial">
             <span>Historial de Tickets</span>
+        </div>
+        <div class="option">
+            <img src="~/images/user.png" alt="usuarios">
+            <span>Gestionar usuarios</span>
         </div>
         <div class="option">
             <img src="~/images/dashboard.png" alt="Dashboard">
             <span>Dashboard</span>
-        </div>
-        <div class="option">
-            <img src="~/images/user.png" alt="Usuarios">
-            <span>Gestionar usuarios</span>
         </div>
     </aside>
 
@@ -43,7 +89,7 @@
     <div class="content">
         <h1>Bienvenido/a</h1>
         <div class="options">
-            <a href="#" class="option2">
+            <a href="@Url.Action("EnviarTicket", "sistema_Tickets", new { userId = Model.id_usuario })" class="option2">
                 <img src="~/images/Ticket image.png" alt="Enviar un Ticket">
                 <span>Enviar un Ticket</span>
             </a>
@@ -53,5 +99,28 @@
             </a>
         </div>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var rolID = @Model.rolID;
+
+            // Mostrar solo las opciones "Enviar un Ticket" y "Historial de Tickets" para rolID 1 o 3
+            if (rolID === 1 || rolID === 3) {
+                document.querySelectorAll('.option').forEach(function (opcion, index) {
+                    if (index === 0 || index === 1) {
+                        opcion.style.display = 'flex';
+                    } else {
+                        opcion.style.display = 'none';
+                    }
+                });
+            }
+            // Mostrar todas las opciones para rolID 2
+            else if (rolID === 2) {
+                document.querySelectorAll('.option').forEach(function (opcion) {
+                    opcion.style.display = 'flex';
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>

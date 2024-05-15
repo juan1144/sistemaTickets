@@ -40,25 +40,6 @@ body {
   font-size: 1.1em; /* Tamaño del nombre y apellido */
 }
 
-/* Estilo de las opciones en el sidebar */
-.option {
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: #fff;
-}
-
-.option img {
-  width: 50px; /* Tamaño del icono */
-  height: 50px;
-  margin-right: 15px;
-}
-
-.option span {
-  font-size: 1em; /* Tamaño del texto */
-}
-
 .content {
   text-align: center;
   margin-top: 50px;
@@ -74,6 +55,7 @@ h1 {
   justify-content: center;
   margin-top: 50px; /* Añadir un margen superior */
 }
+
 
 .option2 {
   margin: 0 20px;
