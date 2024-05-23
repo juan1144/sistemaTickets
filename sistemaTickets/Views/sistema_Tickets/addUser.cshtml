@@ -1,0 +1,363 @@
+﻿@model sistemaTickets.Models.usuario
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Añadir Usuario - TicketMaster</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 80%;
+            margin: auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+        }
+
+            .nav-links a {
+                color: white;
+                text-decoration: none;
+            }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .user-name {
+            color: white;
+        }
+
+        .logout-btn {
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .content {
+            padding: 5rem 2rem 2rem;
+        }
+
+        .centered {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 70vh;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+            .form-container h2 {
+                text-align: center;
+                margin-bottom: 1.5rem;
+                color: #333;
+            }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+                color: #666;
+            }
+
+            .form-group input,
+            .form-group select {
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 1rem;
+            }
+
+                .form-group input:focus,
+                .form-group select:focus {
+                    border-color: #ff6600;
+                    box-shadow: 0 0 5px rgba(255, 102, 0, 0.5);
+                    outline: none;
+                }
+
+                .form-group input[type="file"] {
+                    padding: 0.5rem;
+                }
+
+            .form-group button {
+                width: 100%;
+                padding: 0.75rem;
+                background-color: #ff6600;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                font-size: 1rem;
+            }
+
+                .form-group button:hover {
+                    background-color: #e55d00;
+                }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">TicketMaster</div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="@Url.Action("Inicio", "sistema_Tickets")">Inicio</a></li>
+            </ul>
+            <div class="user-info">
+                <img src="@Model.imagen" alt="Foto del Usuario" class="user-photo">
+                <span class="user-name">@Model.nombre @Model.apellido</span>
+                <button class="logout-btn" onclick="location.href='@Url.Action("Index", "sistema_Tickets")'">Cerrar Sesión</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="content">
+        <div class="centered">
+            <div class="form-container">
+                <h2>Añadir Usuario</h2>
+                <div class="form-group">
+                    <label for="rol">Rol del usuario</label>
+                    <select id="rol" name="rol" required>
+                        <option value="">Seleccione un rol</option>
+                        @foreach (var item in ViewBag.roles)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Formulario para todos los roles excepto "Usuario Externo" -->
+                <form asp-action="subirFormUserInt" id="generalForm" class="hidden" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="rolGeneral" id="rolGeneral">
+                    <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido">Apellido</label>
+                        <input type="text" id="apellido" name="apellido" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="correo">Correo</label>
+                        <input type="email" id="correo" name="correo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empresa">Empresa</label>
+                        <input type="text" id="empresa" name="empresa">
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Teléfono</label>
+                        <input type="tel" id="telefono" name="telefono">
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Nombre de usuario</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="attachment">Imagen</label>
+                        <input type="file" id="attachment" name="attachment" required>
+                    </div>
+                    <input type="hidden" id="userId" name="userId" value="@Model.id_usuario">
+                    <div class="form-group">
+                        <button type="submit">Añadir Usuario</button>
+                    </div>
+                </form>
+
+                <!-- Formulario para el rol "Usuario Externo" -->
+                <form asp-action="subirFormUserExt" id="externalUserForm" class="hidden" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="rolGeneral" id="rolExterno">
+                    <div class="form-group">
+                        <label for="nombreExterno">Nombre</label>
+                        <input type="text" id="nombreExterno" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellidoExterno">Apellido</label>
+                        <input type="text" id="apellidoExterno" name="apellido" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="correoExterno">Correo</label>
+                        <input type="email" id="correoExterno" name="correo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="usernameExterno">Nombre de usuario</label>
+                        <input type="text" id="usernameExterno" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="passwordExterno">Contraseña</label>
+                        <input type="password" id="passwordExterno" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="attachmentExterno">Imagen</label>
+                        <input type="file" id="attachmentExterno" name="attachment" required>
+                    </div>
+                    <input type="hidden" id="userId" name="userId" value="@Model.id_usuario">
+                    <div class="form-group">
+                        <button type="submit">Añadir Usuario</button>
+                    </div>
+                </form>
+                @if (ViewData.ModelState.ContainsKey("user_nombre"))
+                {
+                    <span class="error-message">@ViewData.ModelState["user_nombre"].Errors[0].ErrorMessage</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 TicketMaster. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const rolID = @Model.rolID;
+            const navLinks = document.getElementById('nav-links');
+
+            if (rolID === 2) {
+                const gestionUsuarios = document.createElement('li');
+                const dashboard = document.createElement('li');
+
+                gestionUsuarios.innerHTML = '<a href="@Url.Action("gestionarUsuarios", "sistema_Tickets", new { userId = Model.id_usuario })">Gestionar Usuarios</a>';
+                dashboard.innerHTML = '<a href="@Url.Action("Dashboard", "sistema_Tickets", new { userId = Model.id_usuario })">Dashboard</a>';
+
+                navLinks.appendChild(gestionUsuarios);
+                navLinks.appendChild(dashboard);
+            }
+
+            const rolDropdown = document.getElementById('rol');
+            const generalForm = document.getElementById('generalForm');
+            const externalUserForm = document.getElementById('externalUserForm');
+            const rolGeneral = document.getElementById('rolGeneral');
+            const rolExterno = document.getElementById('rolExterno');
+
+            rolDropdown.addEventListener('change', function () {
+                const selectedRoleId = this.value;
+                rolGeneral.value = selectedRoleId;
+                rolExterno.value = selectedRoleId;
+
+                if (selectedRoleId === "1") { // Asumiendo que "Usuario Externo" tiene rolID = 1
+                    generalForm.classList.add('hidden');
+                    externalUserForm.classList.remove('hidden');
+                } else if (selectedRoleId === "2" || selectedRoleId === "3") {
+                    externalUserForm.classList.add('hidden');
+                    generalForm.classList.remove('hidden');
+                } else {
+                    generalForm.classList.add('hidden');
+                    externalUserForm.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('generalForm').addEventListener('submit', function (event) {
+                const fieldsToValidate = generalForm.querySelectorAll('input');
+                let allValid = true;
+
+                fieldsToValidate.forEach(field => {
+                    if (!field.value) {
+                        field.style.borderColor = 'red';
+                        allValid = false;
+                    } else {
+                        field.style.borderColor = '';
+                    }
+                });
+
+                if (!allValid) {
+                    event.preventDefault();
+                    alert('Por favor, complete todos los campos.');
+                }
+            });
+
+            document.getElementById('externalUserForm').addEventListener('submit', function (event) {
+                const fieldsToValidate = externalUserForm.querySelectorAll('input');
+                let allValid = true;
+
+                fieldsToValidate.forEach(field => {
+                    if (!field.value) {
+                        field.style.borderColor = 'red';
+                        allValid = false;
+                    } else {
+                        field.style.borderColor = '';
+                    }
+                });
+
+                if (!allValid) {
+                    event.preventDefault();
+                    alert('Por favor, complete todos los campos.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

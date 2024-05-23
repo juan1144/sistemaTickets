@@ -1,129 +1,260 @@
 ﻿@model sistemaTickets.Models.usuario
-@{
-}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subir Nuevo Ticket</title>
-  <!-- Enlace al archivo CSS externo -->
-  <link rel="stylesheet" href="~/css/EnviarTicket.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Ticket - TicketMaster</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 80%;
+            margin: auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+        }
+
+            .nav-links a {
+                color: white;
+                text-decoration: none;
+            }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .user-name {
+            color: white;
+        }
+
+        .logout-btn {
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin: 2rem;
+        }
+
+            .form-container h2 {
+                margin-bottom: 2rem;
+            }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+        .form-container button {
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .form-container .invalid {
+            border-color: red;
+        }
+
+        .error-message {
+            color: red;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+    </style>
 </head>
 <body>
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="user-profile">
-            <img src="@Model.imagen" alt="Foto de perfil">
+    <header>
+        <nav>
+            <div class="logo">TicketMaster</div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="@Url.Action("Inicio", "sistema_Tickets")">Inicio</a></li>
+                <!-- Las opciones de menú se añadirán dinámicamente mediante JavaScript -->
+            </ul>
             <div class="user-info">
-                <span class="name">@Model.nombre @Model.apellido</span>
+                <img src="@Model.imagen" alt="Foto del Usuario" class="user-photo">
+                <span class="user-name">@Model.nombre @Model.apellido</span>
+                <button class="logout-btn" onclick="location.href='@Url.Action("Index", "sistema_Tickets")'">Cerrar Sesión</button>
             </div>
-        </div>
-        <a href="@Url.Action("EnviarTicket", "sistema_Tickets", new { userId = Model.id_usuario })">
-            <div class="option">
-
-                <img src="~/images/Ticket image.png" alt="Ticket">
-                <span>Enviar un Ticket</span>
-
+        </nav>
+    </header>
+    <main>
+        <section class="form-section">
+            <div class="form-container">
+                <h2>Enviar Ticket</h2>
+                <form id="ticket-form" method="post" action="@Url.Action("SubirTicket", "sistema_Tickets")" enctype="multipart/form-data" onsubmit="return validateForm()">
+                    <div class="form-group">
+                        <label for="application">Aplicación</label>
+                        <select id="application" name="application" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="Gestor de Proyectos">Gestor de Proyectos</option>
+                            <option value="Sistema de Tickets">Sistema de Tickets</option>
+                            <option value="CRM">CRM</option>
+                            <option value="Intranet">Intranet</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Asunto</label>
+                        <input type="text" id="subject" name="subject" placeholder="Ingrese el asunto" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Descripción</label>
+                        <textarea id="description" name="description" rows="4" placeholder="Ingrese la descripción" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="priority">Prioridad</label>
+                        <select id="priority" name="priority" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Media">Media</option>
+                            <option value="Baja">Baja</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Categoría</label>
+                        @Html.DropDownList("id_categorias", ViewBag.Categorias as SelectList, "Seleccione una categoría", new { @class = "form-control", @id = "category", @name = "category" })
+                    </div>
+                    <div class="form-group">
+                        <label for="attachment">Adjuntar Archivo</label>
+                        <input type="file" id="attachment" name="attachment">
+                    </div>
+                    <input type="hidden" id="userId" name="userId" value="@Model.id_usuario">
+                    <div class="error-message" id="error-message"></div>
+                    <button type="submit">Enviar Ticket</button>
+                </form>
             </div>
-        </a>
-        <div class="option">
-            <img src="~/images/History image.png" alt="Historial">
-            <span>Historial de Tickets</span>
-        </div>
-        <div class="option">
-            <img src="~/images/user.png" alt="usuarios">
-            <span>Gestionar usuarios</span>
-        </div>
-        <div class="option">
-            <img src="~/images/dashboard.png" alt="Dashboard">
-            <span>Dashboard</span>
-        </div>
-    </aside>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 TicketMaster. Todos los derechos reservados.</p>
+    </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var rolID = @Model.rolID;
+            var navLinks = document.getElementById('nav-links');
 
-  <!-- Contenido principal -->
-  <div class="content">
-        <h1 style="text-align: center;">Nuevo Ticket</h1>
-    <div class="form-container">
-      <form asp-action="SubirTicket" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
-        <div class="input-group">
-            <label for="application">Aplicación</label>
-            @Html.DropDownList("id_aplicacion", ViewBag.Aplicaciones as SelectList, "Seleccione una aplicación", new { @class = "form-control", @id = "application", @name = "application" })
-        </div>
-        <div class="input-group">
-          <label for="subject">Asunto</label>
-          <input type="text" id="subject" name="subject" placeholder="Ingrese el asunto">
-        </div>
-        <div class="input-group">
-          <label for="description">Descripción</label>
-          <textarea id="description" name="description" rows="4" placeholder="Ingrese la descripción"></textarea>
-        </div>
-        <div class="input-group">
-          <label for="priority">Prioridad</label>
-          <select id="priority" name="priority">
-            <option value="">Seleccionar...</option>
-            <option value="alta">Alta</option>
-            <option value="media">Media</option>
-            <option value="baja">Baja</option>
-          </select>
-        </div>
-        <div class="input-group">
-            <label for="category">Categoría</label>
-            @Html.DropDownList("id_categorias", ViewBag.Categorias as SelectList, "Seleccione una categoría", new { @class = "form-control", @id = "category", @name = "category" })
-        </div>
-        <div class="input-group">
-          <label for="attachment">Adjuntar Archivo</label>
-          <input type="file" id="attachment" name="attachment">
-        </div>
-        <input type="hidden" id="userId" name="userId" value="@Model.id_usuario">
-        <div class="error-message" id="error-message"></div>
-        <button type="submit">Enviar Ticket</button>
-      </form>
-    </div>
-  </div>
+            if (rolID === 2) {
+                var gestionUsuarios = document.createElement('li');
+                var dashboard = document.createElement('li');
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var rolID = @Model.rolID;
+                gestionUsuarios.innerHTML = '<a href="@Url.Action("gestionarUsuarios", "sistema_Tickets", new { userId = Model.id_usuario })">Gestionar Usuarios</a>';
+                dashboard.innerHTML = '<a href="@Url.Action("Dashboard", "sistema_Tickets", new { userId = Model.id_usuario })">Dashboard</a>';
 
-        // Mostrar solo las opciones "Enviar un Ticket" y "Historial de Tickets" para rolID 1 o 3
-        if (rolID === 1 || rolID === 3) {
-            document.querySelectorAll('.option').forEach(function (opcion, index) {
-                if (index === 0 || index === 1) {
-                    opcion.style.display = 'flex';
-                } else {
-                    opcion.style.display = 'none';
+                navLinks.appendChild(gestionUsuarios);
+                navLinks.appendChild(dashboard);
+            }
+
+            var form = document.getElementById('ticket-form');
+            form.addEventListener('submit', function (event) {
+                var inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+                var valid = true;
+
+                inputs.forEach(function (input) {
+                    if (!input.value) {
+                        valid = false;
+                        input.classList.add('invalid');
+                    } else {
+                        input.classList.remove('invalid');
+                    }
+                });
+
+                if (!valid) {
+                    event.preventDefault();
+                    alert('Por favor, rellene todos los campos obligatorios.');
                 }
             });
-        }
-        // Mostrar todas las opciones para rolID 2
-        else if (rolID === 2) {
-            document.querySelectorAll('.option').forEach(function (opcion) {
-            opcion.style.display = 'flex';
-            });
-        }
-    });
-    function validateForm() {
-      var application = document.getElementById('application').value;
-      var subject = document.getElementById('subject').value;
-      var description = document.getElementById('description').value;
-      var priority = document.getElementById('priority').value;
-      var category = document.getElementById('category').value;
-      var attachment = document.getElementById('attachment').value;
-      var errorMessage = document.getElementById('error-message');
+        });
 
-      if (application === '' || subject.trim() === '' || description.trim() === '' || priority === '' || category === '') {
-        errorMessage.textContent = 'Por favor complete todos los campos';
-        return false;
-      } else {
-        errorMessage.textContent = '';
-        // Aquí podrías agregar la lógica para enviar los datos del formulario al servidor
-        return true;
-      }
-    }
+        function validateForm() {
+            var application = document.getElementById('application').value;
+            var subject = document.getElementById('subject').value;
+            var description = document.getElementById('description').value;
+            var priority = document.getElementById('priority').value;
+            var category = document.getElementById('category').value;
+            var errorMessage = document.getElementById('error-message');
 
-  </script>
+            if (application === '' || subject.trim() === '' || description.trim() === '' || priority === '' || category === '') {
+                errorMessage.textContent = 'Por favor complete todos los campos';
+                return false;
+            } else {
+                errorMessage.textContent = '';
+                return true;
+            }
+        }
+    </script>
 </body>
 </html>

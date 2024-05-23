@@ -1,98 +1,109 @@
 body {
-  font-family: 'Roboto', sans-serif; /* Cambiar la tipografía */
-  margin: 0;
-  padding: 0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f4f4f4;
 }
 
-/* Estilo básico del sidebar */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 250px; /* Ancho del sidebar */
-  height: 100%;
-  background-color: #333;
-  color: #fff;
-  padding: 20px;
-  box-sizing: border-box;
+header {
+    background-color: #333;
+    color: white;
+    padding: 1rem 0;
 }
 
-/* Estilo del perfil del usuario en el sidebar */
-.user-profile {
-  text-align: center;
-  margin-bottom: 40px;
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    margin: auto;
 }
 
-.user-profile img {
-  width: 100px; /* Tamaño de la imagen del perfil */
-  height: 100px;
-  border-radius: 50%; /* Redondear la imagen del perfil */
-  margin-bottom: 10px;
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
 }
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+    .nav-links a {
+        color: white;
+        text-decoration: none;
+    }
 
 .user-info {
-  margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.user-info .name,
-.user-info .lastname {
-  display: block;
-  font-size: 1.1em; /* Tamaño del nombre y apellido */
+.user-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
 }
 
-.content {
-  text-align: center;
-  margin-top: 50px;
-  margin-left: 280px; /* Ajuste del margen izquierdo para dejar espacio para el sidebar */
+.user-name {
+    color: white;
 }
 
-h1 {
-  font-size: 5em; /* Ajustar el tamaño del mensaje de bienvenida */
+.logout-btn {
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
 }
 
-.options {
-  display: flex;
-  justify-content: center;
-  margin-top: 50px; /* Añadir un margen superior */
+.main-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    gap: 2rem;
 }
 
-
-.option2 {
-  margin: 0 20px;
-  text-decoration: none;
-  color: #333;
-  transition: transform 0.3s, box-shadow 0.3s;
-  border: 2px solid transparent; /* Agregar un borde transparente */
-  border-radius: 10px; /* Agregar bordes redondeados */
+.option {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    transition: transform 0.3s ease;
 }
 
-.option2:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    .option:hover {
+        transform: translateY(-10px);
+    }
 
-.option2:focus,
-.option2:active {
-  outline: none; /* Eliminar el contorno al hacer clic */
-}
+    .option h2 {
+        margin-bottom: 1rem;
+    }
 
-.option2 img {
-  width: 150px; /* Ajustar el tamaño de la imagen */
-  height: 150px;
-  margin-bottom: 10px;
-}
+    .option p {
+        margin-bottom: 1.5rem;
+    }
 
-.option2 span {
-  font-size: 1.5em; /* Ajustar el tamaño del texto */
-}
+    .option button {
+        background-color: #ff6600;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
 
-/* Agregar estilos al hover */
-.option2:hover {
-  border-color: #ffca28; /* Cambiar el color del borde al pasar el cursor */
-}
-
-/* Agregar estilos cuando está seleccionado */
-.option2:active,
-.option2:focus {
-  border-color: #ffca28; /* Cambiar el color del borde al seleccionar */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
 }

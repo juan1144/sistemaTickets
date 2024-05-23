@@ -4,123 +4,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuario Normal</title>
-    <!-- Enlace al archivo CSS externo -->
+    <title>Inicio - TicketMaster</title>
     <link rel="stylesheet" href="~/css/home.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap">
-    <style>
-        /* Agregar estilos a las opciones en el sidebar */
-        .option {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: #fff;
-            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; /* Agregar transición */
-            border: 2px solid transparent; /* Agregar un borde transparente */
-            border-radius: 10px; /* Agregar bordes redondeados */
-        }
-
-        .option:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .option:focus,
-        .option:active {
-            outline: none; /* Eliminar el contorno al hacer clic */
-        }
-
-        .option img {
-            width: 50px; /* Tamaño del icono */
-            height: 50px;
-            margin-right: 15px;
-        }
-
-        .option span {
-            font-size: 1em; /* Tamaño del texto */
-        }
-
-        /* Agregar estilos al hover */
-        .option:hover {
-            border-color: #ffca28; /* Cambiar el color del borde al pasar el cursor */
-        }
-
-        /* Agregar estilos cuando está seleccionado */
-        .option:active,
-        .option:focus {
-            border-color: #ffca28; /* Cambiar el color del borde al seleccionar */
-        }
-    </style>
 </head>
 <body>
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="user-profile">
-            <img src="@Model.imagen" alt="Foto de perfil">
-                <div class="user-info">
-                    <span class="name">@Model.nombre @Model.apellido</span>
-                </div>
-        </div>
-        <a href="@Url.Action("EnviarTicket", "sistema_Tickets", new { userId = Model.id_usuario })">
-        <div class="option">
-            
-                <img src="~/images/Ticket image.png" alt="Ticket">
-                <span>Enviar un Ticket</span>
-            
-        </div>
-        </a>
-        <div class="option">
-            <img src="~/images/History image.png" alt="Historial">
-            <span>Historial de Tickets</span>
-        </div>
-        <div class="option">
-            <img src="~/images/user.png" alt="usuarios">
-            <span>Gestionar usuarios</span>
-        </div>
-        <div class="option">
-            <img src="~/images/dashboard.png" alt="Dashboard">
-            <span>Dashboard</span>
-        </div>
-    </aside>
-
-    <!-- Contenido principal -->
-    <div class="content">
-        <h1>Bienvenido/a</h1>
-        <div class="options">
-            <a href="@Url.Action("EnviarTicket", "sistema_Tickets", new { userId = Model.id_usuario })" class="option2">
-                <img src="~/images/Ticket image.png" alt="Enviar un Ticket">
-                <span>Enviar un Ticket</span>
-            </a>
-            <a href="#" class="option2">
-                <img src="~/images/History image.png" alt="Historial de Tickets">
-                <span>Historial de Tickets</span>
-            </a>
-        </div>
-    </div>
+    <header>
+        <nav>
+            <div class="logo">TicketMaster</div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="@Url.Action("Inicio", "sistema_Tickets")">Inicio</a></li>
+                <!-- Las opciones de menú se añadirán dinámicamente mediante JavaScript -->
+            </ul>
+            <div class="user-info">
+                <img src="@Model.imagen" alt="Foto del Usuario" class="user-photo">
+                <span class="user-name">@Model.nombre @Model.apellido</span>
+                <button class="logout-btn" onclick="location.href='@Url.Action("Index", "sistema_Tickets")'">Cerrar Sesión</button>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <section class="main-options">
+            <div class="option create-ticket">
+                <h2>Crear Ticket</h2>
+                <p>Soluciona problemas creando un nuevo ticket.</p>
+                <button onclick="location.href='@Url.Action("EnviarTicket", "sistema_Tickets", new { userId = Model.id_usuario })'">Crear Ticket</button>
+            </div>
+            <div class="option manage-tickets">
+                <h2>Gestionar Tickets</h2>
+                <p>Revisa y administra los tickets existentes.</p>
+                <button onclick="location.href='@Url.Action("historialTickets", "sistema_Tickets", new { userId = Model.id_usuario })'">Gestionar Tickets</button>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 TicketMaster. Todos los derechos reservados.</p>
+    </footer>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             var rolID = @Model.rolID;
+            var navLinks = document.getElementById('nav-links');
 
-            // Mostrar solo las opciones "Enviar un Ticket" y "Historial de Tickets" para rolID 1 o 3
-            if (rolID === 1 || rolID === 3) {
-                document.querySelectorAll('.option').forEach(function (opcion, index) {
-                    if (index === 0 || index === 1) {
-                        opcion.style.display = 'flex';
-                    } else {
-                        opcion.style.display = 'none';
-                    }
-                });
-            }
-            // Mostrar todas las opciones para rolID 2
-            else if (rolID === 2) {
-                document.querySelectorAll('.option').forEach(function (opcion) {
-                    opcion.style.display = 'flex';
-                });
+            if (rolID === 2) {
+                var gestionUsuarios = document.createElement('li');
+                var dashboard = document.createElement('li');
+
+                gestionUsuarios.innerHTML = '<a href="@Url.Action("gestionarUsuarios", "sistema_Tickets", new { userId = Model.id_usuario })">Gestionar Usuarios</a>';
+                dashboard.innerHTML = '<a href="@Url.Action("Dashboard", "sistema_Tickets", new { userId = Model.id_usuario })">Dashboard</a>';
+
+                navLinks.appendChild(gestionUsuarios);
+                navLinks.appendChild(dashboard);
             }
         });
     </script>
-
 </body>
 </html>

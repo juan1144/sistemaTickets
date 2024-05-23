@@ -1,0 +1,170 @@
+﻿@model sistemaTickets.Models.usuario
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - TicketMaster</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 80%;
+            margin: auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+        }
+
+            .nav-links a {
+                color: white;
+                text-decoration: none;
+            }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .user-name {
+            color: white;
+        }
+
+        .logout-btn {
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .main-options {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            gap: 2rem;
+        }
+
+        .option {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            transition: transform 0.3s ease;
+        }
+
+            .option:hover {
+                transform: translateY(-10px);
+            }
+
+            .option h2 {
+                margin-bottom: 1rem;
+            }
+
+            .option p {
+                margin-bottom: 1.5rem;
+            }
+
+            .option button {
+                background-color: #ff6600;
+                color: white;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                cursor: pointer;
+                border-radius: 4px;
+                font-size: 1rem;
+            }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">TicketMaster</div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="@Url.Action("Inicio", "sistema_Tickets")">Inicio</a></li>
+                <!-- Las opciones de menú se añadirán dinámicamente mediante JavaScript -->
+            </ul>
+            <div class="user-info">
+                <img src="@Model.imagen" alt="Foto del Usuario" class="user-photo">
+                <span class="user-name">@Model.nombre @Model.apellido</span>
+                <button class="logout-btn" onclick="location.href='@Url.Action("Index", "sistema_Tickets")'">Cerrar Sesión</button>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <section class="main-options">
+            <div class="option create-user">
+                <h2>Añadir Usuario</h2>
+                <p>Agrega nuevos usuarios al sistema.</p>
+                <button onclick="location.href='@Url.Action("addUser", "sistema_Tickets", new { userId = Model.id_usuario })'">Añadir Usuario</button>
+            </div>
+            <div class="option manage-users">
+                <h2>Ver Usuarios</h2>
+                <p>Consulta y administra los usuarios existentes.</p>
+                <button onclick="location.href='@Url.Action("viewUsers", "sistema_Tickets", new { userId = Model.id_usuario })'">Ver Usuarios</button>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 TicketMaster. Todos los derechos reservados.</p>
+    </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var rolID = @Model.rolID;
+            var navLinks = document.getElementById('nav-links');
+
+            if (rolID === 2) {
+                var gestionUsuarios = document.createElement('li');
+                var dashboard = document.createElement('li');
+
+                gestionUsuarios.innerHTML = '<a href="@Url.Action("gestionarUsuarios", "sistema_Tickets", new { userId = Model.id_usuario })">Gestionar Usuarios</a>';
+                dashboard.innerHTML = '<a href="@Url.Action("Dashboard", "sistema_Tickets", new { userId = Model.id_usuario })">Dashboard</a>';
+
+                navLinks.appendChild(gestionUsuarios);
+                navLinks.appendChild(dashboard);
+            }
+        });
+    </script>
+</body>
+</html>

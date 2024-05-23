@@ -8,7 +8,6 @@ namespace sistemaTickets.Models
 
         public DbSet<usuario> usuario { get; set; }
         public DbSet<rol> rol { get; set; }
-        public DbSet<Aplicacion> Aplicacion { get; set; }
         public DbSet<Categorias> Categorias { get; set; }
         public DbSet<Tickets> Tickets { get; set; }
         public DbSet<Archivos_adjuntos> Archivos_adjuntos { get; set; }

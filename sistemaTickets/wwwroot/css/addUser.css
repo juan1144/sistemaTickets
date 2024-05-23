@@ -1,0 +1,168 @@
+body {
+    font-family: 'Roboto', sans-serif; /* Cambiar la tipografía */
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+
+/* Estilo básico del sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px; /* Ancho del sidebar */
+    height: 100%;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Estilo del perfil del usuario en el sidebar */
+.user-profile {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+    .user-profile img {
+        width: 100px; /* Tamaño de la imagen del perfil */
+        height: 100px;
+        border-radius: 50%; /* Redondear la imagen del perfil */
+        margin-bottom: 10px;
+    }
+
+.user-info {
+    margin-top: 5px;
+}
+
+    .user-info .name,
+    .user-info .lastname {
+        display: block;
+        font-size: 1.1em; /* Tamaño del nombre y apellido */
+    }
+
+.option {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #fff;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; /* Agregar transición */
+    border: 2px solid transparent; /* Agregar un borde transparente */
+    border-radius: 10px; /* Agregar bordes redondeados */
+}
+
+    .option:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .option:focus,
+    .option:active {
+        outline: none; /* Eliminar el contorno al hacer clic */
+    }
+
+    .option img {
+        width: 50px; /* Tamaño del icono */
+        height: 50px;
+        margin-right: 15px;
+    }
+
+    .option span {
+        font-size: 1em; /* Tamaño del texto */
+    }
+
+    /* Agregar estilos al hover */
+    .option:hover {
+        border-color: #ffca28; /* Cambiar el color del borde al pasar el cursor */
+    }
+
+    /* Agregar estilos cuando está seleccionado */
+    .option:active,
+    .option:focus {
+        border-color: #ffca28; /* Cambiar el color del borde al seleccionar */
+    }
+
+.content {
+    margin-left: 250px; /* Para dejar espacio para la barra lateral */
+    padding: 20px;
+    transition: margin-left 0.3s; /* Agregar transición para el cambio de margen */
+}
+
+/* Estilos para centrar el contenido */
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+}
+
+.form-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .form-container:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        transition: border-color 0.3s;
+    }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #ffca28;
+            outline: none;
+        }
+
+        .form-group input[type="file"] {
+            padding: 3px;
+        }
+
+    .form-group button {
+        width: 100%;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .form-group button:hover {
+            background-color: #45a049;
+        }
+
+.hidden {
+    display: none;
+}

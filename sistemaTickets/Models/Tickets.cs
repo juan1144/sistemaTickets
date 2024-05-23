@@ -11,9 +11,6 @@ namespace sistemaTickets.Models
         [Display(Name = "Descripcion")]
         public string descripcion { get; set; }
 
-        [Display(Name = "Codigo ticket")]
-        public int? codigo_ticket { get; set; }
-
         [Display(Name = "Id de categorias")]
         public int? id_categorias { get; set; }
 
@@ -26,8 +23,11 @@ namespace sistemaTickets.Models
         [Display(Name = "Asunto")]
         public string asunto { get; set; }
 
-        [Display(Name = "Id de la aplicacion")]
-        public int? id_aplicacion { get; set; }
+        [Display(Name = "Aplicacion")]
+        public string aplicacion { get; set; }
+
+        [Display(Name = "Estado")]
+        public string estado { get; set; }
 
         [Display(Name = "Id del archivo Adj")]
         public string archivoAdj_id { get; set; }
@@ -36,9 +36,9 @@ namespace sistemaTickets.Models
         public DateTime fecha_creacion { get; set; }
 
         [Display(Name = "Fecha de actualizacion")]
-        public DateTime fecha_actualizacion { get; set; }
+        public DateTime? fecha_actualizacion { get; set; }
 
         [Display(Name = "Prioridad")]
-        public int? prioridad { get; set; }
+        public string prioridad { get; set; }
     }
 }

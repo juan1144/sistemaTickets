@@ -1,0 +1,481 @@
+﻿@model sistemaTickets.Models.usuario
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial Tickets - TicketMaster</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 80%;
+            margin: auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+        }
+
+            .nav-links a {
+                color: white;
+                text-decoration: none;
+            }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .user-name {
+            color: white;
+        }
+
+        .logout-btn {
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .content {
+            padding: 5rem 2rem 2rem;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .centered {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .filters,
+        .navbar,
+        .tickets-table {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 0;
+            padding: 10px;
+            background-color: #333;
+            border-radius: 5px 5px 0 0;
+            border-bottom: 1px solid #444;
+        }
+
+            .filters label,
+            .filters select,
+            .filters input,
+            .filters button {
+                margin-right: 10px;
+                color: #fff;
+            }
+
+            .filters label {
+                margin-right: 5px;
+            }
+
+            .filters select,
+            .filters input {
+                padding: 5px;
+                background-color: #444;
+                border: 1px solid #555;
+                border-radius: 4px;
+                color: #fff;
+                transition: background-color 0.3s, border-color 0.3s;
+            }
+
+                .filters select:focus,
+                .filters input:focus {
+                    background-color: #555;
+                    border-color: #ffca28;
+                    outline: none;
+                }
+
+            .filters button {
+                padding: 5px 10px;
+                background-color: #4CAF50;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s, transform 0.3s;
+            }
+
+                .filters button:hover {
+                    background-color: #45a049;
+                    transform: scale(1.05);
+                }
+
+                .filters button:active {
+                    background-color: #3e8e41;
+                    transform: scale(1);
+                }
+
+                .filters button#resetFilters {
+                    background-color: #f44336;
+                }
+
+                    .filters button#resetFilters:hover {
+                        background-color: #e53935;
+                        transform: scale(1.05);
+                    }
+
+                    .filters button#resetFilters:active {
+                        background-color: #d32f2f;
+                        transform: scale(1);
+                    }
+
+        .navbar {
+            background-color: #333;
+            padding: 10px 0;
+            margin: 0;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .nav {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-item {
+            border: 1px solid transparent;
+            border-radius: 5px;
+        }
+
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1em;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+            padding: 10px 20px;
+            box-sizing: border-box;
+        }
+
+            .nav-link:hover {
+                color: #ffca28;
+                background-color: rgba(255, 255, 255, 0.1);
+                border-color: #ffca28;
+            }
+
+            .nav-link.active {
+                color: #ffca28;
+                border-bottom: 2px solid #ffca28;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .details-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+            .details-button:hover {
+                background-color: #45a049;
+            }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">TicketMaster</div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="@Url.Action("Inicio", "sistema_Tickets")">Inicio</a></li>
+            </ul>
+            <div class="user-info">
+                <img src="@Model.imagen" alt="Foto del Usuario" class="user-photo">
+                <span class="user-name">@Model.nombre @Model.apellido</span>
+                <button class="logout-btn" onclick="location.href='@Url.Action("Index", "sistema_Tickets")'">Cerrar Sesión</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="content">
+        <div class="main-container">
+            <div class="centered">
+                <h1>Historial de Tickets</h1>
+
+                <!-- Apartado de filtros -->
+                <div class="filters">
+                    <label for="estado" id="labelEstado">Estado:</label>
+                    <select id="estado">
+                        <option value="">Todos</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En progreso">En progreso</option>
+                        <option value="Cerrado">Cerrado</option>
+                    </select>
+                    <label for="prioridad">Prioridad:</label>
+                    <select id="prioridad">
+                        <option value="">Todos</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Media">Media</option>
+                        <option value="Baja">Baja</option>
+                    </select>
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="fecha">
+                    <button id="applyFilters">Aplicar filtros</button>
+                    <button id="resetFilters">Limpiar filtros</button>
+                </div>
+
+                <!-- Navbar con las opciones de los tickets -->
+                <nav class="navbar">
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" data-target="tablaAbiertos">Tickets Abiertos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-target="tablaCerrados">Tickets Cerrados</a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Tablas con el listado de tickets -->
+                <!-- TICKETS ABIERTOS -->
+                <div class="tickets-table">
+                    <table id="tablaAbiertos">
+                        <thead>
+                            <tr>
+                                <th>Asunto</th>
+                                <th>Prioridad</th>
+                                <th>Estado</th>
+                                <th>Fecha de creación</th>
+                                <th>Última actualización</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ticket in (IEnumerable<dynamic>)ViewData["ticketsAbiertos"])
+                            {
+                                <tr>
+                                    <td>@ticket.asunto</td>
+                                    <td>@ticket.prioridad</td>
+                                    <td>@ticket.estado</td>
+                                    <td>@ticket.fecha_creacion.ToString("yyyy-MM-dd")</td>
+                                    @if (ticket.fecha_actualizacion == null)
+                                    {
+                                        <td></td>
+                                    }
+                                    else
+                                    {
+                                        <td>@ticket.fecha_actualizacion.ToString("yyyy-MM-dd")</td>
+                                    }
+                                    <td>
+                                        <button class="details-button">Ver detalles</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TICKETS CERRADOS -->
+                <div class="tickets-table" style="display: none;">
+                    <table id="tablaCerrados">
+                        <thead>
+                            <tr>
+                                <th>Asunto</th>
+                                <th>Prioridad</th>
+                                <th>Estado</th>
+                                <th>Fecha de creación</th>
+                                <th>Última actualización</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ticket in (IEnumerable<dynamic>)ViewData["ticketsCerrados"])
+                            {
+                                <tr>
+                                    <td>@ticket.asunto</td>
+                                    <td>@ticket.prioridad</td>
+                                    <td>@ticket.estado</td>
+                                    <td>@ticket.fecha_creacion.ToString("yyyy-MM-dd")</td>
+                                    @if (ticket.fecha_actualizacion == null)
+                                    {
+                                        <td></td>
+                                    }
+                                    else
+                                    {
+                                        <td>@ticket.fecha_actualizacion.ToString("yyyy-MM-dd")</td>
+                                    }
+                                    <td>
+                                        <button class="details-button">Ver detalles</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var rolID = @Model.rolID;
+            var navLinks = document.getElementById('nav-links');
+
+            if (rolID === 2) {
+                var gestionUsuarios = document.createElement('li');
+                var dashboard = document.createElement('li');
+
+                gestionUsuarios.innerHTML = '<a href="@Url.Action("gestionarUsuarios", "sistema_Tickets", new { userId = Model.id_usuario })">Gestionar Usuarios</a>';
+                dashboard.innerHTML = '<a href="@Url.Action("Dashboard", "sistema_Tickets", new { userId = Model.id_usuario })">Dashboard</a>';
+
+                navLinks.appendChild(gestionUsuarios);
+                navLinks.appendChild(dashboard);
+            }
+
+            var links = document.querySelectorAll('.nav-link');
+            links.forEach(function (link) {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    links.forEach(function (navLink) {
+                        navLink.classList.remove('active');
+                    });
+                    link.classList.add('active');
+                    var targetId = link.getAttribute('data-target');
+                    var tables = document.querySelectorAll('.tickets-table');
+                    tables.forEach(function (table) {
+                        table.style.display = 'none';
+                    });
+                    document.getElementById(targetId).parentNode.style.display = 'block';
+                });
+            });
+        });
+
+        document.getElementById("applyFilters").addEventListener("click", function () {
+            var estado = document.getElementById("estado").value;
+            var prioridad = document.getElementById("prioridad").value;
+            var fecha = document.getElementById("fecha").value;
+            filterTable("tablaAbiertos", estado, prioridad, fecha);
+            filterTable("tablaCerrados", estado, prioridad, fecha);
+        });
+
+        document.getElementById("resetFilters").addEventListener("click", function () {
+            document.getElementById("estado").value = "";
+            document.getElementById("prioridad").value = "";
+            document.getElementById("fecha").value = "";
+            showAllRows("tablaAbiertos");
+            showAllRows("tablaCerrados");
+        });
+
+        function filterTable(tableId, estado, prioridad, fecha) {
+            var table = document.getElementById(tableId);
+            var rows = table.getElementsByTagName("tr");
+
+            for (var i = 1; i < rows.length; i++) {
+                var row = rows[i];
+                var cells = row.getElementsByTagName("td");
+
+                var rowPrioridad = cells[1].textContent;
+                var rowEstado = cells[2].textContent;
+                var rowFechaCreacion = cells[3].textContent.split(' ')[0];
+
+                var showRow = true;
+                if (estado && rowEstado !== estado) {
+                    showRow = false;
+                }
+                if (prioridad && rowPrioridad !== prioridad) {
+                    showRow = false;
+                }
+                if (fecha && rowFechaCreacion !== fecha) {
+                    showRow = false;
+                }
+
+                row.style.display = showRow ? "" : "none";
+            }
+        }
+
+        function showAllRows(tableId) {
+            var table = document.getElementById(tableId);
+            var rows = table.getElementsByTagName("tr");
+
+            for (var i = 0; i < rows.length; i++) {
+                rows[i].style.display = "";
+            }
+        }
+    </script>
+
+</body>
+</html>
