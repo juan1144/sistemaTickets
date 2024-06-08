@@ -131,14 +131,34 @@ namespace sistemaTickets.Controllers
         public IActionResult historialTickets(int userId)
         {
             var usuario = _context.usuario.FirstOrDefault(u => u.id_usuario == userId);
-            var ticketsAbiertos = _context.Tickets.Where(t => t.creado_por == userId && t.estado != "Cerrado").ToList();
-            var ticketsCerrados = _context.Tickets.Where(t => t.creado_por == userId && t.estado == "Cerrado").ToList();
+
+            if (usuario == null)
+            {
+                return NotFound(); // Manejo de error si el usuario no es encontrado
+            }
+
+            List<Tickets> ticketsAbiertos;
+            List<Tickets> ticketsCerrados;
+
+            if (usuario.rolID == 2)
+            {
+                // Si el rol del usuario es 2, obtener todos los registros
+                ticketsAbiertos = _context.Tickets.Where(t => t.estado != "Cerrado").ToList();
+                ticketsCerrados = _context.Tickets.Where(t => t.estado == "Cerrado").ToList();
+            }
+            else
+            {
+                // Si el rol del usuario no es 2, obtener solo los registros creados por el usuario
+                ticketsAbiertos = _context.Tickets.Where(t => t.creado_por == userId && t.estado != "Cerrado").ToList();
+                ticketsCerrados = _context.Tickets.Where(t => t.creado_por == userId && t.estado == "Cerrado").ToList();
+            }
 
             ViewData["ticketsAbiertos"] = ticketsAbiertos;
             ViewData["ticketsCerrados"] = ticketsCerrados;
 
             return View(usuario);
         }
+
 
         public IActionResult gestionarUsuarios(int userId)
         {
