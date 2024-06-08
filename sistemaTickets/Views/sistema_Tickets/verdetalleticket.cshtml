@@ -1,0 +1,42 @@
+﻿@model sistemaTickets.Models.usuario;
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - TicketMaster</title>
+    <link rel="stylesheet" href="~/css/home.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    </head>
+
+    <body>
+    <header>
+        <nav class="container d-flex justify-content-around">
+            <div class="logo">TicketMaster</div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="@Url.Action("Inicio", "sistema_Tickets")">Inicio</a></li>
+                <!-- Las opciones de menú se añadirán dinámicamente mediante JavaScript -->
+            </ul>
+            <div class="user-info">
+                
+                <span class="user-name">@Model.nombre @Model.apellido</span>
+                <button class="logout-btn" onclick="location.href='@Url.Action("Index", "sistema_Tickets")'">Cerrar Sesión</button>
+            </div>
+        </nav>
+    </header>
+
+
+        <h2><center>DASHBOARD</center></h2>
+        <hr />
+        <br />
+
+        <main>
+
+          
+        </main>
+            
+      </body>
+            
+      </html>

@@ -3,7 +3,10 @@ using Firebase.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using sistemaTickets.Models;
+using sistemaTickets.Services;
 using System.Linq;
 using System.Net.Mail;
 using System.Net.Sockets;
@@ -16,13 +19,18 @@ namespace sistemaTickets.Controllers
     {
         private readonly DB_TicketsDbContext _context;
 
-        public sistema_TicketsController(DB_TicketsDbContext context)
+        private readonly IConfiguration _configuration;
+
+        public sistema_TicketsController(DB_TicketsDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public IActionResult Index()
         {
+            
+
             // Verificar si el usuario ya está autenticado
             if (User.Identity.IsAuthenticated)
             {
@@ -32,8 +40,9 @@ namespace sistemaTickets.Controllers
 
             return View();
         }
+    
 
-        [HttpPost]
+[HttpPost]
         public IActionResult Login(string user_nombre, string contrasenia)
         {
             // Buscar el usuario en la base de datos
@@ -123,6 +132,14 @@ namespace sistemaTickets.Controllers
             // Insertar el ticket en la base de datos
             _context.Tickets.Add(ticket);
             await _context.SaveChangesAsync();
+            var ultimoticket=_context.Tickets.OrderByDescending(t => t.fecha_creacion).FirstOrDefault();
+
+            // Crear instancia del servicio de correo y enviar un correo de prueba
+            correo enviarCorreo = new correo(_configuration);
+            string asunto = "[Ticket #"+ ultimoticket.id_ticket + "] Su solicitud ha sido registrada";
+            string cuerpo = "Saludos, la solicitud " + ultimoticket.asunto + " ha sido registrada." + "\nTicket #:" + ultimoticket.id_ticket + "\nDescripión::" + ultimoticket.descripcion + "\nAplicación:" + ultimoticket.aplicacion + "\nPrioridad:" + ultimoticket.prioridad;
+
+            enviarCorreo.enviar("juaanperezz518@gmail.com", asunto, cuerpo);
 
             // Redireccionar a la página de inicio u otra página según sea necesario
             return RedirectToAction("historialTickets", new { userId = userId });
@@ -157,6 +174,7 @@ namespace sistemaTickets.Controllers
             ViewData["ticketsCerrados"] = ticketsCerrados;
 
             return View(usuario);
+
         }
 
 
@@ -276,10 +294,54 @@ namespace sistemaTickets.Controllers
             };
             _context.usuario.Add(nuevoUsuario);
             await _context.SaveChangesAsync();
+            var ultimousuario = _context.usuario.OrderByDescending(t => t.id_usuario).FirstOrDefault();
+
+            correo enviarCorreo = new correo(_configuration);
+            string asunto = "Su usuario ha sido registrado";
+            string cuerpo = "Saludos "+ultimousuario.nombre+ ",\n \nsu usuario es: " + ultimousuario.user_nombre + "\nSu contraseña es: "+ultimousuario.contrasenia;
+
+            enviarCorreo.enviar("juaanperezz518@gmail.com", asunto, cuerpo);
 
             return RedirectToAction("gestionarUsuarios", new { userId = userId });
         }
+
+        public IActionResult dashboard (int userId)
+        {
+
+            // Consultar la información del usuario desde la base de datos
+            var usuario = _context.usuario.FirstOrDefault(u => u.id_usuario == userId);
+
+            if (usuario == null)
+            {
+                // Manejar el caso en que el usuario no se encuentre
+                return NotFound();
+            }
+
+            // Consultar todos los tickets
+            var ticketsUsuario = _context.Tickets.ToList();
+
+            // Calcular las cantidades de tickets por estado
+            var ticketsAbiertosCount = ticketsUsuario.Count(t => t.estado == "Abierto");
+            var ticketsCerradosCount = ticketsUsuario.Count(t => t.estado == "Cerrado");
+            var ticketsPendienteCount = ticketsUsuario.Count(t => t.estado == "Pendiente");
+            var ticketsAsignadosCount = ticketsUsuario.Count(t => t.asignado_a == userId);
+
+            // Agregar la información del usuario y sus tickets a ViewBag
+            ViewBag.Usuario = usuario;
+            ViewBag.TicketsUsuario = ticketsUsuario;
+            ViewBag.TicketsAbiertosCount = ticketsAbiertosCount;
+            ViewBag.TicketsCerradosCount = ticketsCerradosCount;
+            ViewBag.TicketsAsignadosCount = ticketsAsignadosCount;
+            ViewBag.TicketsPendienteCount = ticketsPendienteCount;
+
+            // Verificar los datos recuperados en consola para depuración
+            Console.WriteLine("Usuario: " + usuario.nombre);
+            Console.WriteLine("Total Tickets: " + ticketsUsuario.Count);
+
+            return View("Dashboard", usuario);
+        }
     }
-}
+    }
+
 
 
