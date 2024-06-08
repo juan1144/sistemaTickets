@@ -1,42 +1,408 @@
-﻿@model sistemaTickets.Models.usuario;
-
+﻿@model sistemaTickets.Models.Tickets
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio - TicketMaster</title>
-    <link rel="stylesheet" href="~/css/home.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Detalles del Ticket - TicketMaster</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
 
-    </head>
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
 
-    <body>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 80%;
+            margin: auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+        }
+
+            .nav-links a {
+                color: white;
+                text-decoration: none;
+            }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .user-name {
+            color: white;
+        }
+
+        .logout-btn {
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .ticket-header h2 {
+                font-size: 24px;
+                margin: 0;
+            }
+
+            .ticket-header .ticket-id {
+                font-size: 18px;
+                font-weight: bold;
+                color: #555;
+            }
+
+        .ticket-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+            .detail-item label {
+                font-weight: bold;
+            }
+
+            .detail-item span {
+                margin-left: 10px;
+            }
+
+        .buttons {
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+        }
+
+            .button.change-status {
+                background-color: #4CAF50;
+            }
+
+                .button.change-status:hover {
+                    background-color: #45a049;
+                }
+
+            .button.change-assignment {
+                background-color: #2196F3;
+            }
+
+                .button.change-assignment:hover {
+                    background-color: #1976D2;
+                }
+
+        .comments-section {
+            margin-top: 20px;
+        }
+
+        .comments-header {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .comments-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comment-item {
+            background: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .comment-item .comment-meta {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+            }
+
+            .comment-item .comment-date {
+                font-size: 12px;
+                color: #777;
+            }
+
+            .comment-item .comment-user {
+                font-size: 12px;
+                color: #777;
+            }
+
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+            .comment-form textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                margin-bottom: 10px;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                resize: vertical;
+            }
+
+            .comment-form button {
+                align-self: flex-end;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                background-color: #4CAF50;
+                color: white;
+            }
+
+                .comment-form button:hover {
+                    background-color: #45a049;
+                }
+
+        .change-status-section,
+        .change-assignment-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+            .change-status-section select,
+            .change-assignment-section select {
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                margin-right: 10px;
+            }
+
+            .change-status-section button,
+            .change-assignment-section button {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                background-color: #4CAF50;
+                color: white;
+            }
+
+                .change-status-section button:hover,
+                .change-assignment-section button:hover {
+                    background-color: #45a049;
+                }
+    </style>
+</head>
+<body>
     <header>
-        <nav class="container d-flex justify-content-around">
+        <nav>
             <div class="logo">TicketMaster</div>
             <ul class="nav-links" id="nav-links">
                 <li><a href="@Url.Action("Inicio", "sistema_Tickets")">Inicio</a></li>
-                <!-- Las opciones de menú se añadirán dinámicamente mediante JavaScript -->
             </ul>
             <div class="user-info">
-                
-                <span class="user-name">@Model.nombre @Model.apellido</span>
+                <img src="@ViewBag.UserImage" alt="Foto del Usuario" class="user-photo">
+                <span class="user-name">@ViewBag.UserName</span>
                 <button class="logout-btn" onclick="location.href='@Url.Action("Index", "sistema_Tickets")'">Cerrar Sesión</button>
             </div>
         </nav>
     </header>
 
+    <div class="container">
+        <div class="section ticket-header">
+            <h2>@Model.asunto</h2>
+            <span class="ticket-id">Ticket #@Model.id_ticket</span>
+        </div>
 
-        <h2><center>DASHBOARD</center></h2>
-        <hr />
-        <br />
+        <div class="section ticket-details">
+            <div class="detail-item">
+                <label>Aplicación:</label>
+                <span>@Model.aplicacion</span>
+            </div>
+            <div class="detail-item">
+                <label>Categoría:</label>
+                <span>@Model.id_categorias</span>
+            </div>
+            <div class="detail-item">
+                <label>Estado:</label>
+                <span>@Model.estado</span>
+            </div>
+            <div class="detail-item">
+                <label>Prioridad:</label>
+                <span>@Model.prioridad</span>
+            </div>
+            <div class="detail-item">
+                <label>Creado por:</label>
+                <span>@Model.creado_por</span>
+            </div>
+            <div class="detail-item">
+                <label>Asignado a:</label>
+                <span>@Model.asignado_a</span>
+            </div>
+        </div>
 
-        <main>
+        @if (ViewBag.RolID == 2 || ViewBag.RolID == 3)
+        {
+            <div class="section buttons">
+                <button class="button change-assignment" onclick="toggleAssignmentSection()">Cambiar Asignación</button>
+                <button class="button change-status" onclick="toggleStatusSection()">Cambiar Estado</button>
+            </div>
+        }
 
-          
-        </main>
-            
-      </body>
-            
-      </html>
+        <div class="section change-status-section" id="changeStatusSection">
+            <form method="post" action="@Url.Action("ActualizarEstado", "sistema_Tickets")">
+                <input type="hidden" name="id_ticket" value="@Model.id_ticket" />
+                <select name="estado">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En progreso">En progreso</option>
+                    <option value="Cerrado">Cerrado</option>
+                </select>
+                <button type="submit">Actualizar</button>
+            </form>
+        </div>
+
+        <div class="section change-assignment-section" id="changeAssignmentSection">
+            <form method="post" action="@Url.Action("ActualizarAsignacion", "sistema_Tickets")">
+                <input type="hidden" name="id_ticket" value="@Model.id_ticket" />
+                <select name="asignado_a">
+                    @foreach (var usuario in ViewBag.Usuarios)
+                    {
+                        <option value="@usuario.id_usuario">@usuario.nombre @usuario.apellido</option>
+                    }
+                </select>
+                <button type="submit">Actualizar</button>
+            </form>
+        </div>
+
+        <div class="section comments-section">
+            <div class="comments-header">Comentarios</div>
+            <div class="comment-form">
+                <form method="post" action="@Url.Action("AgregarComentario", "sistema_Tickets")">
+                    <input type="hidden" name="id_ticket" value="@Model.id_ticket" />
+                    <textarea name="comentario" rows="4" required></textarea>
+                    <button type="submit">Agregar Comentario</button>
+                </form>
+            </div>
+            <br />
+            <ul class="comments-list">
+                @foreach (var comentario in ViewBag.Comentarios)
+                {
+                    <li class="comment-item">
+                        <div>@comentario.comentario</div>
+                        <div class="comment-meta">
+                            <div class="comment-date">@comentario.fecha?.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                            <div class="comment-user">@comentario.nombre @comentario.apellido</div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var rolID = @ViewBag.RolID;
+            var navLinks = document.getElementById('nav-links');
+
+            if (rolID === 2 || rolID === 3) {
+                var gestionUsuarios = document.createElement('li');
+                var dashboard = document.createElement('li');
+
+                gestionUsuarios.innerHTML = '<a href="@Url.Action("gestionarUsuarios", "sistema_Tickets", new { userId = @ViewBag.UserId })">Gestionar Usuarios</a>';
+                dashboard.innerHTML = '<a href="@Url.Action("Dashboard", "sistema_Tickets", new { userId = @ViewBag.UserId })">Dashboard</a>';
+
+                navLinks.appendChild(gestionUsuarios);
+                navLinks.appendChild(dashboard);
+            }
+        });
+
+        function toggleStatusSection() {
+            var statusSection = document.getElementById('changeStatusSection');
+            var assignmentSection = document.getElementById('changeAssignmentSection');
+            if (statusSection.style.display === 'none' || statusSection.style.display === '') {
+                statusSection.style.display = 'block';
+                assignmentSection.style.display = 'none';
+            } else {
+                statusSection.style.display = 'none';
+            }
+        }
+
+        function toggleAssignmentSection() {
+            var statusSection = document.getElementById('changeStatusSection');
+            var assignmentSection = document.getElementById('changeAssignmentSection');
+            if (assignmentSection.style.display === 'none' || assignmentSection.style.display === '') {
+                assignmentSection.style.display = 'block';
+                statusSection.style.display = 'none';
+            } else {
+                assignmentSection.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

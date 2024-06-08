@@ -11,5 +11,6 @@ namespace sistemaTickets.Models
         public DbSet<Categorias> Categorias { get; set; }
         public DbSet<Tickets> Tickets { get; set; }
         public DbSet<Archivos_adjuntos> Archivos_adjuntos { get; set; }
+        public DbSet<Comentarios> Comentarios { get; set; }
     }
 }

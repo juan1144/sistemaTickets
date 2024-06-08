@@ -145,8 +145,8 @@
                 <li><a href="@Url.Action("Inicio", "sistema_Tickets")">Inicio</a></li>
             </ul>
             <div class="user-info">
-                <img src="@Model.imagen" alt="Foto del Usuario" class="user-photo">
-                <span class="user-name">@Model.nombre @Model.apellido</span>
+                <img src="@ViewBag.UserImage" alt="Foto del Usuario" class="user-photo">
+                <span class="user-name">@ViewBag.UserName</span>
                 <button class="logout-btn" onclick="location.href='@Url.Action("Index", "sistema_Tickets")'">Cerrar Sesión</button>
             </div>
         </nav>
@@ -197,7 +197,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            var rolID = @Model.rolID;
+            var rolID = @ViewBag.RolID;
             var navLinks = document.getElementById('nav-links');
 
             if (rolID === 2) {

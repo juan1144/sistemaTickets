@@ -285,8 +285,8 @@ namespace sistemaTickets.Controllers
                 nombre = nombre,
                 apellido = apellido,
                 correo = correo,
-                empresa = null,
-                telefono = null,
+                empresa = "",
+                telefono = "",
                 user_nombre = username,
                 contrasenia = password,
                 imagen = urlArchivoCargado,
@@ -359,16 +359,29 @@ namespace sistemaTickets.Controllers
 
         public IActionResult VerDetalleUsuario(int id)
         {
-            var usuario = _context.usuario.FirstOrDefault(u => u.id_usuario == id);
+            var usuarioSeleccionado = _context.usuario.FirstOrDefault(u => u.id_usuario == id);
 
-            if (usuario == null)
+            if (usuarioSeleccionado == null)
             {
                 return NotFound(); // Manejo de error si el usuario no es encontrado
             }
 
-            ViewBag.UserId = HttpContext.Session.GetInt32("UserId");
-            return View(usuario);
+            var usuarioLogueadoId = HttpContext.Session.GetInt32("UserId");
+            if (usuarioLogueadoId == null)
+            {
+                return RedirectToAction("Index", "Home"); // Redirigir al login si no hay un usuario logueado
+            }
+
+            var usuarioLogueado = _context.usuario.FirstOrDefault(u => u.id_usuario == usuarioLogueadoId);
+
+            ViewBag.UserId = usuarioLogueadoId;
+            ViewBag.RolID = usuarioLogueado.rolID;
+            ViewBag.UserName = $"{usuarioLogueado.nombre} {usuarioLogueado.apellido}";
+            ViewBag.UserImage = usuarioLogueado.imagen;
+
+            return View(usuarioSeleccionado);
         }
+
 
         [HttpPost]
         public IActionResult EditarUsuario(usuario updatedUsuario)
@@ -380,14 +393,22 @@ namespace sistemaTickets.Controllers
                 return NotFound(); // Manejo de error si el usuario no es encontrado
             }
 
+            if(usuario.rolID == 1)
+            {
+                usuario.empresa = "";
+                usuario.telefono = "";
+            }
+            else
+            {
+                usuario.empresa = updatedUsuario.empresa;
+                usuario.telefono = updatedUsuario.telefono;
+            }
+
             usuario.nombre = updatedUsuario.nombre;
             usuario.apellido = updatedUsuario.apellido;
             usuario.correo = updatedUsuario.correo;
-            usuario.empresa = updatedUsuario.empresa;
-            usuario.telefono = updatedUsuario.telefono;
             usuario.user_nombre = updatedUsuario.user_nombre;
             usuario.contrasenia = updatedUsuario.contrasenia;
-            usuario.imagen = updatedUsuario.imagen;
             usuario.rolID = updatedUsuario.rolID;
 
             _context.SaveChanges();
@@ -410,6 +431,100 @@ namespace sistemaTickets.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("viewUsers", new { userId = HttpContext.Session.GetInt32("UserId") });
+        }
+
+        public IActionResult VerDetalleTicket(int id)
+        {
+            var ticket = _context.Tickets.FirstOrDefault(t => t.id_ticket == id);
+
+            if (ticket == null)
+            {
+                return NotFound(); // Manejo de error si el ticket no es encontrado
+            }
+
+            var usuarioLogueadoId = HttpContext.Session.GetInt32("UserId");
+            if (usuarioLogueadoId == null)
+            {
+                return RedirectToAction("Index", "Home"); // Redirigir al login si no hay un usuario logueado
+            }
+
+            var usuarioLogueado = _context.usuario.FirstOrDefault(u => u.id_usuario == usuarioLogueadoId);
+
+            ViewBag.UserId = usuarioLogueadoId;
+            ViewBag.RolID = usuarioLogueado.rolID;
+            ViewBag.UserName = $"{usuarioLogueado.nombre} {usuarioLogueado.apellido}";
+            ViewBag.UserImage = usuarioLogueado.imagen;
+
+            var comentarios = _context.Comentarios
+                .Where(c => c.id_ticket == id)
+                .Join(_context.usuario,
+                      comentario => comentario.id_usuario,
+                      usuario => usuario.id_usuario,
+                      (comentario, usuario) => new {
+                          comentario.comentario,
+                          comentario.fecha,
+                          usuario.nombre,
+                          usuario.apellido
+                      })
+                .ToList();
+            ViewBag.Comentarios = comentarios;
+
+            var usuarios = _context.usuario
+                .Where(u => u.rolID == 2 || u.rolID == 3)
+                .Select(u => new { u.id_usuario, u.nombre, u.apellido })
+                .ToList();
+            ViewBag.Usuarios = usuarios;
+
+            return View(ticket);
+        }
+
+        [HttpPost]
+        public IActionResult ActualizarEstado(int id_ticket, string estado)
+        {
+            var ticket = _context.Tickets.FirstOrDefault(t => t.id_ticket == id_ticket);
+            if (ticket != null)
+            {
+                ticket.estado = estado;
+                ticket.fecha_actualizacion = DateTime.Now;
+                _context.SaveChanges();
+            }
+            return RedirectToAction("VerDetalleTicket", new { id = id_ticket });
+        }
+
+        [HttpPost]
+        public IActionResult ActualizarAsignacion(int id_ticket, int asignado_a)
+        {
+            var ticket = _context.Tickets.FirstOrDefault(t => t.id_ticket == id_ticket);
+            if (ticket != null)
+            {
+                ticket.asignado_a = asignado_a;
+                ticket.fecha_actualizacion = DateTime.Now;
+                _context.SaveChanges();
+            }
+            return RedirectToAction("VerDetalleTicket", new { id = id_ticket });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AgregarComentario(int id_ticket, string comentario)
+        {
+            var usuarioLogueadoId = HttpContext.Session.GetInt32("UserId");
+            if (usuarioLogueadoId == null)
+            {
+                return RedirectToAction("Index", "Home"); // Redirigir al login si no hay un usuario logueado
+            }
+
+            var nuevoComentario = new Comentarios
+            {
+                id_ticket = id_ticket,
+                comentario = comentario,
+                fecha = DateTime.Now,
+                id_usuario = usuarioLogueadoId
+            };
+
+            _context.Comentarios.Add(nuevoComentario);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("VerDetalleTicket", new { id = id_ticket });
         }
 
 
