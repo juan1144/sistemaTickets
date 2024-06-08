@@ -1,0 +1,257 @@
+﻿@model sistemaTickets.Models.usuario
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Usuario - TicketMaster</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 80%;
+            margin: auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+        }
+
+            .nav-links a {
+                color: white;
+                text-decoration: none;
+            }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .user-name {
+            color: white;
+        }
+
+        .logout-btn {
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 100px auto 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+        .form-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+            .form-actions button {
+                padding: 10px 15px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+        .save-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+            .save-button:hover {
+                background-color: #45a049;
+            }
+
+        .cancel-button {
+            background-color: #f44336;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+            .cancel-button:hover {
+                background-color: #e53935;
+            }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">TicketMaster</div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="@Url.Action("Inicio", "sistema_Tickets")">Inicio</a></li>
+            </ul>
+            <div class="user-info">
+                <img src="@Model.imagen" alt="Foto del Usuario" class="user-photo">
+                <span class="user-name">@Model.nombre @Model.apellido</span>
+                <button class="logout-btn" onclick="location.href='@Url.Action("Index", "sistema_Tickets")'">Cerrar Sesión</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Detalles del Usuario</h1>
+        <form method="post" action="@Url.Action("EditarUsuario", "sistema_Tickets")" onsubmit="return validateForm()">
+            <input type="hidden" name="id_usuario" value="@Model.id_usuario" />
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" value="@Model.nombre" required />
+            </div>
+            <div class="form-group">
+                <label for="apellido">Apellido</label>
+                <input type="text" id="apellido" name="apellido" value="@Model.apellido" required />
+            </div>
+            <div class="form-group">
+                <label for="correo">Correo</label>
+                <input type="email" id="correo" name="correo" value="@Model.correo" required />
+            </div>
+            <div class="form-group">
+                <label for="empresa">Empresa</label>
+                <input type="text" id="empresa" name="empresa" value="@Model.empresa" />
+            </div>
+            <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input type="text" id="telefono" name="telefono" value="@Model.telefono" />
+            </div>
+            <div class="form-group">
+                <label for="user_nombre">Usuario</label>
+                <input type="text" id="user_nombre" name="user_nombre" value="@Model.user_nombre" required />
+            </div>
+            <div class="form-group">
+                <label for="contrasenia">Contraseña</label>
+                <input type="password" id="contrasenia" name="contrasenia" value="@Model.contrasenia" required />
+            </div>
+            <div class="form-group">
+                <label for="rolID">Id de Rol</label>
+                @Html.DropDownList("rolID", new SelectList(new List<int> { 1, 2, 3 }, Model.rolID), new { id = "rolID", @class = "form-control", onchange = "toggleEmpresaTelefono()" })
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="save-button">Guardar</button>
+                <a href="@Url.Action("viewUsers", "sistema_Tickets", new { userId = ViewBag.UserId })" class="cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var rolID = @Model.rolID;
+            var navLinks = document.getElementById('nav-links');
+
+            if (rolID === 2) {
+                var gestionUsuarios = document.createElement('li');
+                var dashboard = document.createElement('li');
+
+                gestionUsuarios.innerHTML = '<a href="@Url.Action("gestionarUsuarios", "sistema_Tickets", new { userId = @ViewBag.UserId })">Gestionar Usuarios</a>';
+                dashboard.innerHTML = '<a href="@Url.Action("Dashboard", "sistema_Tickets", new { userId = @ViewBag.UserId })">Dashboard</a>';
+
+                navLinks.appendChild(gestionUsuarios);
+                navLinks.appendChild(dashboard);
+            }
+
+            toggleEmpresaTelefono(); // Call function on page load to set initial state
+        });
+
+        function toggleEmpresaTelefono() {
+            var rolID = document.getElementById('rolID').value;
+            var empresa = document.getElementById('empresa');
+            var telefono = document.getElementById('telefono');
+
+            if (rolID == 1) {
+                empresa.disabled = true;
+                telefono.disabled = true;
+                empresa.value = '';
+                telefono.value = '';
+            } else {
+                empresa.disabled = false;
+                telefono.disabled = false;
+            }
+        }
+
+        function validateForm() {
+            var rolID = document.getElementById('rolID').value;
+            var nombre = document.getElementById('nombre').value.trim();
+            var apellido = document.getElementById('apellido').value.trim();
+            var correo = document.getElementById('correo').value.trim();
+            var empresa = document.getElementById('empresa').value.trim();
+            var telefono = document.getElementById('telefono').value.trim();
+            var user_nombre = document.getElementById('user_nombre').value.trim();
+            var contrasenia = document.getElementById('contrasenia').value.trim();
+
+            if (!nombre || !apellido || !correo || !user_nombre || !contrasenia) {
+                alert('Por favor, complete todos los campos obligatorios.');
+                return false;
+            }
+
+            if (rolID != 1 && (!empresa || !telefono)) {
+                alert('Por favor, complete los campos Empresa y Teléfono.');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>

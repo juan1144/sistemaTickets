@@ -340,8 +340,81 @@ namespace sistemaTickets.Controllers
 
             return View("Dashboard", usuario);
         }
+
+        public IActionResult viewUsers(int userId)
+        {
+            var usuario = _context.usuario.FirstOrDefault(u => u.id_usuario == userId);
+
+            if (usuario == null)
+            {
+                return NotFound(); // Manejo de error si el usuario no es encontrado
+            }
+
+            List<usuario> listadoUsuarios = _context.usuario.ToList();
+
+            ViewData["listadoUsuarios"] = listadoUsuarios;
+
+            return View(usuario);
+        }
+
+        public IActionResult VerDetalleUsuario(int id)
+        {
+            var usuario = _context.usuario.FirstOrDefault(u => u.id_usuario == id);
+
+            if (usuario == null)
+            {
+                return NotFound(); // Manejo de error si el usuario no es encontrado
+            }
+
+            ViewBag.UserId = HttpContext.Session.GetInt32("UserId");
+            return View(usuario);
+        }
+
+        [HttpPost]
+        public IActionResult EditarUsuario(usuario updatedUsuario)
+        {
+            var usuario = _context.usuario.FirstOrDefault(u => u.id_usuario == updatedUsuario.id_usuario);
+
+            if (usuario == null)
+            {
+                return NotFound(); // Manejo de error si el usuario no es encontrado
+            }
+
+            usuario.nombre = updatedUsuario.nombre;
+            usuario.apellido = updatedUsuario.apellido;
+            usuario.correo = updatedUsuario.correo;
+            usuario.empresa = updatedUsuario.empresa;
+            usuario.telefono = updatedUsuario.telefono;
+            usuario.user_nombre = updatedUsuario.user_nombre;
+            usuario.contrasenia = updatedUsuario.contrasenia;
+            usuario.imagen = updatedUsuario.imagen;
+            usuario.rolID = updatedUsuario.rolID;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("viewUsers", new { userId = HttpContext.Session.GetInt32("UserId") });
+        }
+
+
+        [HttpPost]
+        public IActionResult EliminarUsuario(int id)
+        {
+            var usuario = _context.usuario.FirstOrDefault(u => u.id_usuario == id);
+
+            if (usuario == null)
+            {
+                return NotFound(); // Manejo de error si el usuario no es encontrado
+            }
+
+            _context.usuario.Remove(usuario);
+            _context.SaveChanges();
+
+            return RedirectToAction("viewUsers", new { userId = HttpContext.Session.GetInt32("UserId") });
+        }
+
+
     }
-    }
+}
 
 
 
