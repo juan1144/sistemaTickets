@@ -1,0 +1,144 @@
+﻿@model sistemaTickets.Models.usuario
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - TicketMaster</title>
+    <link rel="stylesheet" href="~/css/home.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <header>
+        <nav class="container d-flex justify-content-around">
+            <div class="logo">TicketMaster</div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="@Url.Action("Inicio", "sistema_Tickets")">Inicio</a></li>
+                <!-- Las opciones de menú se añadirán dinámicamente mediante JavaScript -->
+            </ul>
+            <div class="user-info">
+                <img src="@Model.imagen" alt="Foto del Usuario" class="user-photo">
+                <span class="user-name">@Model.nombre @Model.apellido</span>
+                <button class="logout-btn" onclick="location.href='@Url.Action("Index", "sistema_Tickets")'">Cerrar Sesión</button>
+            </div>
+        </nav>
+    </header>
+
+    <h2><center>DASHBOARD</center></h2>
+    <hr />
+    <br />
+
+    <main>
+        <div class="container d-flex justify-content-around">
+            <!-- Widget de tickets abiertos -->
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Tickets Abiertos</h5>
+                    <p class="card-text">Cantidad: @ViewBag.TicketsAbiertosCount</p>
+                </div>
+            </div>
+
+            <!-- Widget de tickets cerrados -->
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Tickets Cerrados</h5>
+                    <p class="card-text">Cantidad: @ViewBag.TicketsCerradosCount</p>
+                </div>
+            </div>
+
+            <!-- Widget de tickets pendiente -->
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Tickets Pendientes</h5>
+                    <p class="card-text">Cantidad: @ViewBag.TicketsPendienteCount</p>
+                </div>
+            </div>
+
+            <!-- Widget de tickets asignados -->
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Tickets Asignados</h5>
+                    <p class="card-text">Cantidad: @ViewBag.TicketsAsignadosCount</p>
+                </div>
+            </div>
+        </div>
+
+        <br />
+
+        
+
+        <div class="container">
+            <canvas id="ticketsChart" width="800" height="400"></canvas>
+        </div>
+    </main>
+
+    <br />
+    <br/>
+    <br />
+    <br />
+
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            var ctx = document.getElementById('ticketsChart').getContext('2d');
+
+            var tickets = @Html.Raw(Json.Serialize(ViewBag.TicketsUsuario));
+            var dates = tickets.map(ticket => ticket.fecha_creacion);
+            var months = dates.map(date => {
+                var d = new Date(date);
+                return d.getMonth();
+            });
+
+            var ticketCountByMonth = new Array(12).fill(0);
+            months.forEach(month => {
+                ticketCountByMonth[month]++;
+            });
+
+            var ticketsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                    datasets: [{
+                        label: 'Tickets por mes',
+                        data: ticketCountByMonth,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+    }
+
+    <footer>
+        <p>&copy; 2024 TicketMaster. Todos los derechos reservados.</p>
+    </footer>
+
+    
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var rolID = @Model.rolID;
+            var navLinks = document.getElementById('nav-links');
+
+            if (rolID === 2) {
+                var gestionUsuarios = document.createElement('li');
+                var dashboard = document.createElement('li');
+
+                gestionUsuarios.innerHTML = '<a href="@Url.Action("gestionarUsuarios", "sistema_Tickets", new { userId = Model.id_usuario })">Gestionar Usuarios</a>';
+                dashboard.innerHTML = '<a href="@Url.Action("Dashboard", "sistema_Tickets", new { userId = Model.id_usuario })">Dashboard</a>';
+
+                navLinks.appendChild(gestionUsuarios);
+                navLinks.appendChild(dashboard);
+            }
+        });
+    </script>
+</body>
+</html>

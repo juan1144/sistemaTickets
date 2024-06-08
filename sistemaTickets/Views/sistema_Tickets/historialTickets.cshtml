@@ -340,7 +340,8 @@
                                         <td>@ticket.fecha_actualizacion.ToString("yyyy-MM-dd")</td>
                                     }
                                     <td>
-                                        <button class="details-button">Ver detalles</button>
+                                        <button class="details-button" onclick="location.href='@Url.Action("VerDetalleTicket", "sistema_Tickets", new { id = ticket.id_ticket })'">Ver detalles</button>
+
                                     </td>
                                 </tr>
                             }
@@ -378,7 +379,7 @@
                                         <td>@ticket.fecha_actualizacion.ToString("yyyy-MM-dd")</td>
                                     }
                                     <td>
-                                        <button class="details-button">Ver detalles</button>
+                                       
                                     </td>
                                 </tr>
                             }

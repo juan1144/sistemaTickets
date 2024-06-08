@@ -3,6 +3,7 @@ using Firebase.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using sistemaTickets.Models;
 using System.Linq;
 using System.Net.Mail;
@@ -259,7 +260,44 @@ namespace sistemaTickets.Controllers
 
             return RedirectToAction("gestionarUsuarios", new { userId = userId });
         }
+
+        public IActionResult dashboard (int userId)
+        {
+
+            // Consultar la información del usuario desde la base de datos
+            var usuario = _context.usuario.FirstOrDefault(u => u.id_usuario == userId);
+
+            if (usuario == null)
+            {
+                // Manejar el caso en que el usuario no se encuentre
+                return NotFound();
+            }
+
+            // Consultar todos los tickets
+            var ticketsUsuario = _context.Tickets.ToList();
+
+            // Calcular las cantidades de tickets por estado
+            var ticketsAbiertosCount = ticketsUsuario.Count(t => t.estado == "Abierto");
+            var ticketsCerradosCount = ticketsUsuario.Count(t => t.estado == "Cerrado");
+            var ticketsPendienteCount = ticketsUsuario.Count(t => t.estado == "Pendiente");
+            var ticketsAsignadosCount = ticketsUsuario.Count(t => t.asignado_a == userId);
+
+            // Agregar la información del usuario y sus tickets a ViewBag
+            ViewBag.Usuario = usuario;
+            ViewBag.TicketsUsuario = ticketsUsuario;
+            ViewBag.TicketsAbiertosCount = ticketsAbiertosCount;
+            ViewBag.TicketsCerradosCount = ticketsCerradosCount;
+            ViewBag.TicketsAsignadosCount = ticketsAsignadosCount;
+            ViewBag.TicketsPendienteCount = ticketsPendienteCount;
+
+            // Verificar los datos recuperados en consola para depuración
+            Console.WriteLine("Usuario: " + usuario.nombre);
+            Console.WriteLine("Total Tickets: " + ticketsUsuario.Count);
+
+            return View("Dashboard", usuario);
+        }
     }
-}
+    }
+
 
 

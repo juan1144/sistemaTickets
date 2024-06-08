@@ -49,12 +49,20 @@
                 var dashboard = document.createElement('li');
 
                 gestionUsuarios.innerHTML = '<a href="@Url.Action("gestionarUsuarios", "sistema_Tickets", new { userId = Model.id_usuario })">Gestionar Usuarios</a>';
+                
                 dashboard.innerHTML = '<a href="@Url.Action("Dashboard", "sistema_Tickets", new { userId = Model.id_usuario })">Dashboard</a>';
-
                 navLinks.appendChild(gestionUsuarios);
                 navLinks.appendChild(dashboard);
             }
         });
+
+        function loadDashboard() {
+            var userId = @Model.id_usuario;
+            $("#dashboard-content").load("@Url.Action("dashboard", "sistema_Tickets", new { userId = Model.id_usuario })");
+        }
     </script>
+
+
+
 </body>
 </html>

@@ -40,5 +40,8 @@ namespace sistemaTickets.Models
 
         [Display(Name = "Prioridad")]
         public string prioridad { get; set; }
+
+        
+         
     }
 }
