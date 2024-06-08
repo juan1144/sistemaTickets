@@ -243,6 +243,14 @@ namespace sistemaTickets.Controllers
             _context.usuario.Add(nuevoUsuario);
             await _context.SaveChangesAsync();
 
+            var ultimousuario = _context.usuario.OrderByDescending(t => t.id_usuario).FirstOrDefault();
+
+            correo enviarCorreo = new correo(_configuration);
+            string asunto = "Su usuario ha sido registrado";
+            string cuerpo = "Saludos " + ultimousuario.nombre + ",\n \nsu usuario es: " + ultimousuario.user_nombre + "\nSu contraseña es: " + ultimousuario.contrasenia;
+
+            enviarCorreo.enviar("juaanperezz518@gmail.com", asunto, cuerpo);
+
             return RedirectToAction("gestionarUsuarios", new { userId = userId });
         }
 
@@ -413,6 +421,12 @@ namespace sistemaTickets.Controllers
 
             _context.SaveChanges();
 
+            correo enviarCorreo = new correo(_configuration);
+            string asunto = "Se han registrado los cambios";
+            string cuerpo = "Saludos " + updatedUsuario.nombre + ",\n\nLos cambios se han guardado exitosamente\n\nNombre: "+updatedUsuario.nombre+"\nApellido: " + updatedUsuario.apellido + "\nUsuario: " + updatedUsuario.user_nombre;
+
+            enviarCorreo.enviar("juaanperezz518@gmail.com", asunto, cuerpo);
+
             return RedirectToAction("viewUsers", new { userId = HttpContext.Session.GetInt32("UserId") });
         }
 
@@ -488,6 +502,14 @@ namespace sistemaTickets.Controllers
                 ticket.fecha_actualizacion = DateTime.Now;
                 _context.SaveChanges();
             }
+
+            var usuariodelTicket = _context.usuario.FirstOrDefault(u => u.id_usuario == ticket.creado_por);
+
+            correo enviarCorreo = new correo(_configuration);
+            string asunto = "[Ticket #" + ticket.id_ticket + "] Hay nuevas actualizaciones";
+            string cuerpo = "Saludos " + usuariodelTicket.nombre + ",\n\nEl estado de su ticket a cambiado a "+ticket.estado;
+
+            enviarCorreo.enviar("juaanperezz518@gmail.com", asunto, cuerpo);
             return RedirectToAction("VerDetalleTicket", new { id = id_ticket });
         }
 
@@ -501,12 +523,22 @@ namespace sistemaTickets.Controllers
                 ticket.fecha_actualizacion = DateTime.Now;
                 _context.SaveChanges();
             }
+
+            var usuariodelTicket = _context.usuario.FirstOrDefault(u => u.id_usuario == ticket.creado_por);
+            var empleadodelTicketAsignado = _context.usuario.FirstOrDefault(u => u.id_usuario == ticket.asignado_a);
+
+            correo enviarCorreo = new correo(_configuration);
+            string asunto = "[Ticket #" + ticket.id_ticket + "] Hay nuevas actualizaciones";
+            string cuerpo = "Saludos " + usuariodelTicket.nombre + ",\n\nSe ha asignado su ticket a " + empleadodelTicketAsignado.nombre +" " + empleadodelTicketAsignado.apellido;
+
+            enviarCorreo.enviar("juaanperezz518@gmail.com", asunto, cuerpo);
             return RedirectToAction("VerDetalleTicket", new { id = id_ticket });
         }
 
         [HttpPost]
         public async Task<IActionResult> AgregarComentario(int id_ticket, string comentario)
         {
+            var ticket = _context.Tickets.FirstOrDefault(t => t.id_ticket == id_ticket);
             var usuarioLogueadoId = HttpContext.Session.GetInt32("UserId");
             if (usuarioLogueadoId == null)
             {
@@ -523,6 +555,14 @@ namespace sistemaTickets.Controllers
 
             _context.Comentarios.Add(nuevoComentario);
             await _context.SaveChangesAsync();
+
+            var usuariodelTicket = _context.usuario.FirstOrDefault(u => u.id_usuario == ticket.creado_por);
+
+            correo enviarCorreo = new correo(_configuration);
+            string asunto = "[Ticket #" + nuevoComentario.id_usuario + "] Hay nuevas actualizaciones";
+            string cuerpo = "Saludos " + usuariodelTicket.nombre + ",\n\nSe ha agregado el siguiente comentario a su ticket:\n\n["+nuevoComentario.comentario+"]";
+
+            enviarCorreo.enviar("juaanperezz518@gmail.com", asunto, cuerpo);
 
             return RedirectToAction("VerDetalleTicket", new { id = id_ticket });
         }
