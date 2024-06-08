@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using sistemaTickets.Models;
+using sistemaTickets.Services;
 using System.Linq;
 using System.Net.Mail;
 using System.Net.Sockets;
@@ -17,13 +19,18 @@ namespace sistemaTickets.Controllers
     {
         private readonly DB_TicketsDbContext _context;
 
-        public sistema_TicketsController(DB_TicketsDbContext context)
+        private readonly IConfiguration _configuration;
+
+        public sistema_TicketsController(DB_TicketsDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public IActionResult Index()
         {
+            
+
             // Verificar si el usuario ya está autenticado
             if (User.Identity.IsAuthenticated)
             {
@@ -33,8 +40,9 @@ namespace sistemaTickets.Controllers
 
             return View();
         }
+    
 
-        [HttpPost]
+[HttpPost]
         public IActionResult Login(string user_nombre, string contrasenia)
         {
             // Buscar el usuario en la base de datos
@@ -124,6 +132,14 @@ namespace sistemaTickets.Controllers
             // Insertar el ticket en la base de datos
             _context.Tickets.Add(ticket);
             await _context.SaveChangesAsync();
+            var ultimoticket=_context.Tickets.OrderByDescending(t => t.fecha_creacion).FirstOrDefault();
+
+            // Crear instancia del servicio de correo y enviar un correo de prueba
+            correo enviarCorreo = new correo(_configuration);
+            string asunto = "[Ticket #"+ ultimoticket.id_ticket + "] Su solicitud ha sido registrada";
+            string cuerpo = "Saludos, la solicitud " + ultimoticket.asunto + " ha sido registrada." + "\nTicket #:" + ultimoticket.id_ticket + "\nDescripión::" + ultimoticket.descripcion + "\nAplicación:" + ultimoticket.aplicacion + "\nPrioridad:" + ultimoticket.prioridad;
+
+            enviarCorreo.enviar("juaanperezz518@gmail.com", asunto, cuerpo);
 
             // Redireccionar a la página de inicio u otra página según sea necesario
             return RedirectToAction("historialTickets", new { userId = userId });
@@ -132,13 +148,33 @@ namespace sistemaTickets.Controllers
         public IActionResult historialTickets(int userId)
         {
             var usuario = _context.usuario.FirstOrDefault(u => u.id_usuario == userId);
-            var ticketsAbiertos = _context.Tickets.Where(t => t.creado_por == userId && t.estado != "Cerrado").ToList();
-            var ticketsCerrados = _context.Tickets.Where(t => t.creado_por == userId && t.estado == "Cerrado").ToList();
+
+            if (usuario == null)
+            {
+                return NotFound(); // Manejo de error si el usuario no es encontrado
+            }
+
+            List<Tickets> ticketsAbiertos;
+            List<Tickets> ticketsCerrados;
+
+            if (usuario.rolID == 2)
+            {
+                // Si el rol del usuario es 2, obtener todos los registros
+                ticketsAbiertos = _context.Tickets.Where(t => t.estado != "Cerrado").ToList();
+                ticketsCerrados = _context.Tickets.Where(t => t.estado == "Cerrado").ToList();
+            }
+            else
+            {
+                // Si el rol del usuario no es 2, obtener solo los registros creados por el usuario
+                ticketsAbiertos = _context.Tickets.Where(t => t.creado_por == userId && t.estado != "Cerrado").ToList();
+                ticketsCerrados = _context.Tickets.Where(t => t.creado_por == userId && t.estado == "Cerrado").ToList();
+            }
 
             ViewData["ticketsAbiertos"] = ticketsAbiertos;
             ViewData["ticketsCerrados"] = ticketsCerrados;
 
             return View(usuario);
+
         }
 
         public IActionResult gestionarUsuarios(int userId)
@@ -257,6 +293,13 @@ namespace sistemaTickets.Controllers
             };
             _context.usuario.Add(nuevoUsuario);
             await _context.SaveChangesAsync();
+            var ultimousuario = _context.usuario.OrderByDescending(t => t.id_usuario).FirstOrDefault();
+
+            correo enviarCorreo = new correo(_configuration);
+            string asunto = "Su usuario ha sido registrado";
+            string cuerpo = "Saludos "+ultimousuario.nombre+ ",\n \nsu usuario es: " + ultimousuario.user_nombre + "\nSu contraseña es: "+ultimousuario.contrasenia;
+
+            enviarCorreo.enviar("juaanperezz518@gmail.com", asunto, cuerpo);
 
             return RedirectToAction("gestionarUsuarios", new { userId = userId });
         }
